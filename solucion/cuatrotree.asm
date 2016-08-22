@@ -135,7 +135,7 @@ ctIter_next:
   add r10b,1 ; current++
   mov [r9b],r10b ; Guardo a current en su lugar
   mov r11,[r8+offset_iter_nodo] ; En r11 tengo la direccion del nodo
-  mov r12,[r11+offset_nodo_hijo+r10b] ; En r12 tengo al hijo del nodo [current]
+  mov r12,[r11+offset_nodo_hijo1+r10b] ; En r12 tengo al hijo del nodo [current]
 primerIf:
   cmp r12,0
   jnz segundoElse
