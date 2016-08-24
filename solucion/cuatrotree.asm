@@ -38,16 +38,29 @@ section .text
 ; void ct_new(ctTree** pct);
 ct_new:
 ;Recibo el parametro de C
-  mov r8,[rdi] ; Me llego por RDI ctTree** pct --> r8= Direccion del struct.
-  ;Defino el arbol, es decir, le pongo el puntero NULL al root y cantida de hijos =0
-  mov r9,NULL
-  mov [r8+offset_arbol_root],r9 ; Pongo en los primeros 8 bytes la direccion del nodo root en null
-  mov [r8+offset_arbol_size],r9d ; Cantidad de hijos =0
-        ret
+  mov r8,rdi ; Tengo en r8 el puntero al puntero que contiene donde comienza el struct
+  mov rdi,12
+  call malloc
+  mov [r8],rax
+  ;Creo un nodo root nulo
+  mov r9,rax
+  mov rdi,53
+  call malloc
+  mov r10,NULL
+  mov [r9+offset_arbol_root],rax
+  mov [r9+offset_arbol_size],r10d
+  mov [rax+offset_nodo_father],r10
+  mov[rax+offset_nodo_len],r10b
+  mov[rax+offset_nodo_hijo1],r10
+  mov[rax+offset_nodo_hijo2],r10
+  mov[rax+offset_nodo_hijo3],r10
+  mov[rax+offset_nodo_hijo4],r10
+    ret
 
 ; =====================================
 ; void ct_delete(ctTree** pct);
 ct_delete:
+
         ret
 
 ; ; =====================================
@@ -82,14 +95,14 @@ ctIter_delete:
 ; =====================================
 ; void ctIter_first(ctIter* ctIt);
 ctIter_first:
-;ALINEADA
-  push rbp ;D
+;DESALINEADA
+  push rbp ;A
   mov rbp,rsp
-  push rbx ;A
-  push r12 ;D
-  push r13 ;A
-  push r14 ;D
-  push r15 ;A
+  push rbx ;D
+  push r12 ;A
+  push r13 ;D
+  push r14 ;A
+  push r15 ;D
   mov r8,rdi ;En r8 tengo la direccion iterador
   mov r9,[r8+offset_iter_arbol] ; En r9 tengo la direccion del arbol
   mov r10,[r9+offset_arbol_root] ; En r10 tengo la direccion nodo root del arbol
@@ -109,25 +122,26 @@ ctIter_first:
   mov [r8+offset_iter_current],r14b
   mov r14d,0
   mov [r8+offset_iter_count],r14d
-  pop r15;D
-  pop r14;A
-  pop r13;D
-  pop r12;A
-  pop rbx;D
-  pop rbp;A
+  pop r15;A
+  pop r14;D
+  pop r13;A
+  pop r12;D
+  pop rbx;A
+  pop rbp;D
+  ESTA DESALINEADA !!!
   ret
 
 ; =====================================
 ; void ctIter_next(ctIter* ctIt);
 ctIter_next:
-;ALINEADA
-  push rbp ;D
+;DESALINEADA
+  push rbp ;A
   mov rbp,rsp
-  push rbx ;A
-  push r12 ;D
-  push r13 ;A
-  push r14 ;D
-  push r15 ;A
+  push rbx ;D
+  push r12 ;A
+  push r13 ;D
+  push r14 ;A
+  push r15 ;D
 
   mov r8,rdi ;En r8 tengo la direccion del iterador
   mov r9b,[r8+offset_iter_current]; En r9b tengo la direccion de  current
@@ -181,7 +195,7 @@ ctIter_valid:
   mov r9,NULL
   cmp [rdi+offset_iter_nodo],r9
   jz esInvalido
-  mov eax,1 ;!!!!!!!PREGUNTAR QUE HAY QUE DEVOLVER!!!!!
+  mov eax,1 ; 
 fin:
         ret
 esInvalido:

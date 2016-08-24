@@ -7,6 +7,12 @@ int main (void){
     char* name = "cambiameporotronombre.txt";
     FILE *pFile = fopen( name, "a" );
     
+
+
+//EJEMPLO DE COMO LLAMAR A NEW
+    /*ctTree* pct; 
+	ct_new(&pct);
+*/
     fprintf(pFile,"-\n");
         
     fclose( pFile );
