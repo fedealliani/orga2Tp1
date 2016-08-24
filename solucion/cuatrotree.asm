@@ -128,55 +128,55 @@ ctIter_first:
   pop r12;D
   pop rbx;A
   pop rbp;D
-  ESTA DESALINEADA !!!
+  ;ESTA DESALINEADA !!!
   ret
 
 ; =====================================
 ; void ctIter_next(ctIter* ctIt);
 ctIter_next:
-;DESALINEADA
-  push rbp ;A
-  mov rbp,rsp
-  push rbx ;D
-  push r12 ;A
-  push r13 ;D
-  push r14 ;A
-  push r15 ;D
+;;DESALINEADA
+;  push rbp ;A
+;  mov rbp,rsp
+;  push rbx ;D
+;  push r12 ;A
+;  push r13 ;D
+;  push r14 ;A
+;  push r15 ;D
+;
+;  mov r8,rdi ;En r8 tengo la direccion del iterador
+;  mov r9b,[r8+offset_iter_current]; En r9b tengo la direccion de  current
+;  mov r10b,[r9b] ; En r10b tengo el valor de current
+;  add r10b,1 ; current++
+;  mov [r9b],r10b ; Guardo a current en su lugar
+;  mov r11,[r8+offset_iter_nodo] ; En r11 tengo la direccion del nodo
+;  mov r12,[r11+offset_nodo_hijo1+r10b] ; En r12 tengo al hijo del nodo [current]
+;primerIf:
+;  cmp r12,0
+;  jnz segundoElse
+;segundoIf:
+;  mov r13b,[r11+offset_nodo_len]
+;  sub r13b,1
+;  cmp r10b,r13b
+;  jle end
+;  ;REALIZAR ESTA FUNCION
+;  call ctIter_aux_up ; Ya tengo en RDI la direccion del iterador
+;  jmp end
 
-  mov r8,rdi ;En r8 tengo la direccion del iterador
-  mov r9b,[r8+offset_iter_current]; En r9b tengo la direccion de  current
-  mov r10b,[r9b] ; En r10b tengo el valor de current
-  add r10b,1 ; current++
-  mov [r9b],r10b ; Guardo a current en su lugar
-  mov r11,[r8+offset_iter_nodo] ; En r11 tengo la direccion del nodo
-  mov r12,[r11+offset_nodo_hijo1+r10b] ; En r12 tengo al hijo del nodo [current]
-primerIf:
-  cmp r12,0
-  jnz segundoElse
-segundoIf:
-  mov r13b,[r11+offset_nodo_len]
-  sub r13b,1
-  cmp r10b,r13b
-  jle end
-  ;REALIZAR ESTA FUNCION
-  call ctIter_aux_up ; Ya tengo en RDI la direccion del iterador
-  jmp end
 
-
-segundoElse:
-  mov [r11],r12 ; Asigno un nuevo nodo en el iterador
-  ;REALIZAR ESTA FUNCION
-  call ctIter_aux_down ; Bajo hasta encontrar el menor del subarbol (RDI ya tiene la direccion del iterador)
-  jmp end
+;segundoElse:
+;  mov [r11],r12 ; Asigno un nuevo nodo en el iterador
+;  ;REALIZAR ESTA FUNCION
+;  call ctIter_aux_down ; Bajo hasta encontrar el menor del subarbol (RDI ya tiene la direccion del iterador)
+;  jmp end
  ;RELEER EL ENUNCIADO QUE HAY UNA FUNCION QUE NO USE...
-end:
-  pop r15
-  pop r14
-  pop r13
-  pop r12
-  pop rbx
-  pop rbp
-  ret
+;end:
+;  pop r15
+;  pop r14
+;  pop r13
+;  pop r12
+;  pop rbx
+;  pop rbp
+;  ret
 
  
 
@@ -186,7 +186,7 @@ end:
 ctIter_get:
   mov r9,[rdi+offset_iter_nodo] ;En r9 tengo la direccion del nodo actual
   mov r10b,[rdi+offset_iter_current]; En r10 tengo la posicion actual dentro del nodo
-  mov eax, [rdi+r10b*4+8] ; Guardo el resultado en eax(32 bits bajos de rax)
+  mov eax, [rdi+r10*4+8] ; Guardo el resultado en eax(32 bits bajos de rax)
         ret
 
 ; =====================================
@@ -199,7 +199,7 @@ ctIter_valid:
 fin:
         ret
 esInvalido:
-  mov eax,r9
+  mov eax,r9d
   jmp fin
 
 
