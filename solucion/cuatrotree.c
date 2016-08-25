@@ -5,14 +5,13 @@
 ctNode* ct_aux_search(ctNode** currNode, ctNode* fatherNode, uint32_t newVal){
 //PRIMER CASO: NO EXISTE NODO DONDE METERLO
 	if(*currNode==NULL){
-
 		ctNode* nuevo= malloc(53);			//CREO EL NODO
 		(*nuevo).father=fatherNode;			//LE ASIGNO SU PADRE
 		(*nuevo).len=0;						//LE ASIGNO LEN 0
 		for (int i = 0; i < 4; i++)	{
 			(*nuevo).child[i]=NULL;
 		}
-											//PONGO TODOS LOS HIJOS EN NULL
+								//PONGO TODOS LOS HIJOS EN NULL
 if (fatherNode==NULL){
 	return nuevo;
 }
