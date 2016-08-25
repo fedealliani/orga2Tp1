@@ -38,24 +38,43 @@ section .text
 ; void ct_new(ctTree** pct);
 ct_new:
 ;Recibo el parametro de C
-  mov r8,rdi ; Tengo en r8 el puntero al puntero que contiene donde comienza el struct
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+
+  mov r12,rdi ; Tengo en r12 el puntero al puntero que contiene donde comienza el struct
   mov rdi,12
   call malloc
-  mov [r8],rax
+  mov [r12],rax
   ;Creo un nodo root nulo
-  mov r9,rax
+  mov r13,rax
   mov rdi,53
   call malloc
-  mov r10,NULL
-  mov [r9+offset_arbol_root],rax
-  mov [r9+offset_arbol_size],r10d
-  mov [rax+offset_nodo_father],r10
-  mov[rax+offset_nodo_len],r10b
-  mov[rax+offset_nodo_hijo1],r10
-  mov[rax+offset_nodo_hijo2],r10
-  mov[rax+offset_nodo_hijo3],r10
-  mov[rax+offset_nodo_hijo4],r10
-    ret
+  mov r14,NULL
+  mov [r13+offset_arbol_root],rax
+  mov [r13+offset_arbol_size],r14d
+  mov [rax+offset_nodo_father],r14
+  mov[rax+offset_nodo_len],r14b
+  mov[rax+offset_nodo_hijo1],r14
+  mov[rax+offset_nodo_hijo2],r14
+  mov[rax+offset_nodo_hijo3],r14
+  mov[rax+offset_nodo_hijo4],r14
+
+
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+    ret;A
 
 ; =====================================
 ; void ct_delete(ctTree** pct);
