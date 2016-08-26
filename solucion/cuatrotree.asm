@@ -20,6 +20,7 @@
   extern malloc
   extern free
   extern fprintf
+  extern printf
    
 ; FUNCIONES
   global ct_new
@@ -32,6 +33,11 @@
   global ctIter_get
   global ctIter_valid
  
+
+ section .data 
+
+ printValor: DB '%d',10,0
+
 section .text
 
 ; =====================================
@@ -83,13 +89,97 @@ ct_delete:
         ret
 
 ; ; =====================================
-; ; void ct_aux_print(ctNode* node);
+; ; void ct_aux_print(ctNode* node,FILE *pFile);
 ct_aux_print:
-        ret
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  ;FIJARSE QUE NODE DISTINTO DE NULL
+  mov rbx,rsi ; Tengo la direccion del file
+  mov r12,rdi ; Tengo en r12 la direccion del nodo
+  cmp r12,NULL
+  je finPrint
+  mov r13b,[r12+offset_nodo_len];r13b tiene el len del nodo
+  cmp r13b,3; Comparo len del nodo con 3, si es igual hago recursion
+  je recursion
+  mov r14,0 ; r14 contador
+  cicloPrintAux:
+    cmp r14b,r13b    ;comparo len con contador
+    je finPrint         ;si son iguales termine
+    mov rdi,rbx     ; Pongo en rdi la direccion del file
+    mov rsi,printValor ; pongo en rsi el string
+    mov edx,[r12+r14*4+8] ; pongo en rdx el value
+    call fprintf          ; llamo a fprintf
+    add r14b,1            ; sumo uno al contador
+    jmp cicloPrintAux             ; vuelvo al ciclo
+
+recursion:
+ mov rdi,[r12+offset_nodo_hijo1]; ; pongo en rdi el primer hijo
+ mov rsi,rbx ;Pongo en rsi la direccion del file
+  call ct_aux_print ; hago recursion con el primer hijo
+  mov rdi,rbx     ; Pongo en rdi la direccion del file
+  mov rsi,printValor ; pongo en rsi el string
+  mov edx,[r12+offset_nodo_valorUno] ; pongo en rdx el value[0]
+  call fprintf
+
+  mov rdi,[r12+offset_nodo_hijo2]; ; pongo en rdi el primer hijo
+ mov rsi,rbx ;Pongo en rsi la direccion del file
+   call ct_aux_print ; hago recursion con el primer hijo
+  mov rdi,rbx     ; Pongo en rdi la direccion del file
+  mov rsi,printValor ; pongo en rsi el string
+  mov edx,[r12+offset_nodo_valorDos] ; pongo en rdx el value[0]
+  call fprintf
+
+  mov rdi,[r12+offset_nodo_hijo3]; ; pongo en rdi el primer hijo
+  mov rsi,rbx ;Pongo en rsi la direccion del file
+  call ct_aux_print ; hago recursion con el primer hijo
+  mov rdi,rbx     ; Pongo en rdi la direccion del file
+  mov rsi,printValor ; pongo en rsi el string
+  mov edx,[r12+offset_nodo_valorTres] ; pongo en rdx el value[0]
+  call fprintf
+
+  mov rdi,[r12+offset_nodo_hijo4]; ; pongo en rdi el primer hijo
+  mov rsi,rbx ;Pongo en rsi la direccion del file
+  call ct_aux_print ; hago recursion con el primer hijo
+
+
+finPrint:
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+        ret ;A
 
 ; ; =====================================
-; ; void ct_print(ctTree* ct);
+; ; void ct_print(ctTree* ct,FILE *pFile);
 ct_print:
+push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r8,rdi
+  mov rdi,[r8+offset_arbol_root]
+  call ct_aux_print
+   pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
         ret
 
 ; =====================================
@@ -220,5 +310,6 @@ fin:
 esInvalido:
   mov eax,r9d
   jmp fin
+
 
 

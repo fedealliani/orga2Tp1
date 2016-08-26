@@ -14,7 +14,7 @@ int main (void){
 	int h=19;
 	int i=39;
 	int j=4;
-    char* name = "cambiameporotronombre.txt";
+    char* name = "archivito.txt";
     FILE *pFile = fopen( name, "a" );
     printf("Creo el arbol pct\n");
     ctTree* pct; 
@@ -27,7 +27,8 @@ int main (void){
     printf("Agrego el %d\n",b);
     ct_add(pct,b);
     printf("Nodo Root valor[1]=%d\n",pct->root->value[1]);
-    printf("Agrego el %d\n",c);
+    ct_print(pct,pFile);
+  /*  printf("Agrego el %d\n",c);
     ct_add(pct,c);
     printf("Nodo Root valor[2]=%d\n",pct->root->value[2]);
 	ct_add(pct,d);
@@ -46,6 +47,7 @@ int main (void){
     }
     ctIter_delete(iter);
     ct_delete(&pct);
+    */
     fprintf(pFile,"-\n");
         
     fclose( pFile );
