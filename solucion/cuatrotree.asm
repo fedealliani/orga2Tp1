@@ -85,8 +85,82 @@ ct_new:
 ; =====================================
 ; void ct_delete(ctTree** pct);
 ct_delete:
+;Recibo el parametro de C
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  
+  mov r12,rdi ; Tengo en r12 la direccion que apunta al puntero que apunta al struct
+  mov rdi,[r12]; Tengo el puntero al struct y al nodo root
+  call ct_aux_delete­­
+  mov rdi,[r12]
+  call free
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+        ret ;A
+        
+; =====================================
+; void ct_aux_delete(ctNode* node);
+;Recibo el parametro de C
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
 
-        ret
+  mov r12,rdi
+  mov r13b,[r12+offset_nodo_len]
+  cmp r13b,3
+  jne eliminarseElMismo
+  mov r13,[r12+offset_nodo_hijo1]
+  cmp r13,NULL
+  JE eliminarHijo2
+  mov rdi,r13
+  call ct_aux_delete
+eliminarHijo2:
+  mov r13,[r12+offset_nodo_hijo2]
+  cmp r13,NULL
+  JE eliminarHijo3
+  mov rdi,r13
+  call ct_aux_delete
+eliminarHijo3:
+  mov r13,[r12+offset_nodo_hijo3]
+  cmp r13,NULL
+  JE eliminarHijo4
+  mov rdi,r13
+  call ct_aux_delete
+eliminarHijo4:
+  mov r13,[r12+offset_nodo_hijo4]
+  cmp r13,NULL
+  JE eliminarElMismo
+  mov rdi,r13
+  call ct_aux_delete
+eliminarElMismo:
+  mov rdi,r12
+  call free
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+  ret ;A
 
 ; ; =====================================
 ; ; void ct_aux_print(ctNode* node,FILE *pFile);
