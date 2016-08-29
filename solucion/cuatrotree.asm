@@ -32,6 +32,7 @@
   global ctIter_next
   global ctIter_get
   global ctIter_valid
+
  
 
  section .data 
@@ -82,47 +83,20 @@ ct_new:
   pop rbp;D
     ret;A
 
-; =====================================
-; void ct_delete(ctTree** pct);
-ct_delete:
-;Recibo el parametro de C
-;DESALINEADA
-  push rbp ;A
-  mov rbp,rsp
-  sub rsp,8;D
-  push rbx ;A
-  push r12 ;D
-  push r13 ;A
-  push r14 ;D
-  push r15 ;A
-  
-  mov r12,rdi ; Tengo en r12 la direccion que apunta al puntero que apunta al struct
-  mov rdi,[r12]; Tengo el puntero al struct y al nodo root
-  call ct_aux_delete­­
-  mov rdi,[r12]
-  call free
-  pop r15;D
-  pop r14;A
-  pop r13;D
-  pop r12;A
-  pop rbx;D
-  add rsp,8;A
-  pop rbp;D
-        ret ;A
-        
-; =====================================
-; void ct_aux_delete(ctNode* node);
-;Recibo el parametro de C
-;DESALINEADA
-  push rbp ;A
-  mov rbp,rsp
-  sub rsp,8;D
-  push rbx ;A
-  push r12 ;D
-  push r13 ;A
-  push r14 ;D
-  push r15 ;A
 
+
+; =====================================
+;void ct_aux_delete(ctNode* node);
+;DESALINEADA
+auxDelete:
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
   mov r12,rdi
   mov r13b,[r12+offset_nodo_len]
   cmp r13b,3
@@ -131,26 +105,26 @@ ct_delete:
   cmp r13,NULL
   JE eliminarHijo2
   mov rdi,r13
-  call ct_aux_delete
+  call auxDelete
 eliminarHijo2:
   mov r13,[r12+offset_nodo_hijo2]
   cmp r13,NULL
   JE eliminarHijo3
   mov rdi,r13
-  call ct_aux_delete
+  call auxDelete
 eliminarHijo3:
   mov r13,[r12+offset_nodo_hijo3]
   cmp r13,NULL
   JE eliminarHijo4
   mov rdi,r13
-  call ct_aux_delete
+  call auxDelete
 eliminarHijo4:
   mov r13,[r12+offset_nodo_hijo4]
   cmp r13,NULL
-  JE eliminarElMismo
+  JE eliminarseElMismo
   mov rdi,r13
-  call ct_aux_delete
-eliminarElMismo:
+  call auxDelete
+eliminarseElMismo:
   mov rdi,r12
   call free
   pop r15;D
@@ -161,6 +135,38 @@ eliminarElMismo:
   add rsp,8;A
   pop rbp;D
   ret ;A
+
+
+
+; =====================================
+; void ct_delete(ctTree** pct);
+ct_delete:
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,rdi ;r12 la direccion que apunta al puntero que apunta al struct
+  mov r13,[r12];En r13 tengo el puntero al struct
+  mov rdi,[r13+offset_arbol_root] ; puntero al nodo root 
+
+  call auxDelete
+  mov rdi,[r12]
+  call free
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+  ret ;A
+        
+
 
 ; ; =====================================
 ; ; void ct_aux_print(ctNode* node,FILE *pFile);
@@ -203,8 +209,8 @@ recursion:
   call fprintf
 
   mov rdi,[r12+offset_nodo_hijo2]; ; pongo en rdi el primer hijo
- mov rsi,rbx ;Pongo en rsi la direccion del file
-   call ct_aux_print ; hago recursion con el primer hijo
+  mov rsi,rbx ;Pongo en rsi la direccion del file
+  call ct_aux_print ; hago recursion con el primer hijo
   mov rdi,rbx     ; Pongo en rdi la direccion del file
   mov rsi,printValor ; pongo en rsi el string
   mov edx,[r12+offset_nodo_valorDos] ; pongo en rdx el value[0]
@@ -259,14 +265,31 @@ push rbp ;A
 ; =====================================
 ; ctIter* ctIter_new(ctTree* ct);
 ctIter_new:
-  mov r9,NULL
-  mov r8,rdi ; Tengo en r8 la direccion del arbol.
-  mov [r8+offset_iter_arbol],r8 ; Guardo la direccion del arbol
-  mov [r8+offset_iter_nodo],r9 ; Pongo null en el nodo actual
-  mov [r8+offset_iter_current],r9b ; Pongo 0 en el current
-  mov [r8+offset_iter_count],r9d ; Pongo 0 en count
-  mov rax,r8 ; Le retorno la direccion del iterador
-  
+
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,NULL
+  mov r13,rdi ; Tengo en r13 la direccion del arbol
+  mov rdi,21
+  call malloc
+  mov r14,rax ; Tengo el puntero al iterador
+  mov [r14+offset_iter_arbol],r13 ; Guardo la direccion del arbol
+  mov [r14+offset_iter_nodo],r12 ; Pongo null en el nodo actual
+  mov [r14+offset_iter_current],r12b ; Pongo 0 en el current
+  mov [r14+offset_iter_count],r12d ; Pongo 0 en count  
+   pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
         ret
 
 ; =====================================
@@ -275,23 +298,22 @@ ctIter_delete:
   call free ; En RDI ya esta la direccion porque me la paso C. 
         ret
 
+
 ; =====================================
-; void ctIter_first(ctIter* ctIt);
-ctIter_first:
-;DESALINEADA
+; ctNode* nodoMasALaIzq(ctNode* node);
+
+nodoMasALaIzq:
   push rbp ;A
   mov rbp,rsp
-  push rbx ;D
-  push r12 ;A
-  push r13 ;D
-  push r14 ;A
-  push r15 ;D
-  mov r8,rdi ;En r8 tengo la direccion iterador
-  mov r9,[r8+offset_iter_arbol] ; En r9 tengo la direccion del arbol
-  mov r10,[r9+offset_arbol_root] ; En r10 tengo la direccion nodo root del arbol
-  mov r12,r10
-  mov r13,r10
-  ciclo:
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,rdi
+  mov r13,rdi
+ciclo:
   ;r12 es el nodo temporal a preguntar
   ;r13 es el ultimo nodo que tiene valor
   ;if(nodo.hijo[0]!=null)
@@ -300,89 +322,221 @@ ctIter_first:
   cmp r12,NULL
   jnz ciclo ;Si no es null sigo en el ciclo
   ;Sali del ciclo y tengo en r13 el ultimo nodo valido
-  mov [r8+offset_iter_nodo],r13
-  mov r14b,1
-  mov [r8+offset_iter_current],r14b
-  mov r14d,0
-  mov [r8+offset_iter_count],r14d
-  pop r15;A
-  pop r14;D
-  pop r13;A
-  pop r12;D
-  pop rbx;A
+  mov rax,r13
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
   pop rbp;D
-  ;ESTA DESALINEADA !!!
+  ret
+
+; =====================================
+; void ctIter_first(ctIter* ctIt);
+ctIter_first:
+;DESALINEADA
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,rdi ;En r12 tengo la direccion iterador
+  mov r13,[r12+offset_iter_arbol] ; En r13 tengo la direccion del arbol
+  mov r14,[r13+offset_arbol_root] ; En r14 tengo la direccion nodo root del arbol
+  mov rdi,r14
+  call nodoMasALaIzq
+  mov r13,rax
+  mov [r12+offset_iter_nodo],r13
+  mov r14b,0
+  mov [r12+offset_iter_current],r14b
+  mov r14d,1
+  mov [r12+offset_iter_count],r14d
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+  ret
+
+
+; =====================================
+; uint32_t ctIter_aux_up(ctNode* current,ctNode* father);
+ctIter_aux_up:
+  push rbp
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+
+  mov r12,rdi ; R12 PUNTERO A CURRENT 
+  mov r13,rsi ; R13 PUNTERO A FATHER
+  
+  mov r14,[rsi+offset_nodo_hijo1]
+  cmp r14,r12
+  je esHijoPrimero
+  
+  mov r14,[rsi+offset_nodo_hijo2]
+  cmp r14,r12
+  je esHijoSegundo
+  
+  mov r14,[rsi+offset_nodo_hijo3]
+  cmp r14,r12
+  je esHijoTercero
+  
+  mov eax,3
+  jmp finAuxUp
+  
+
+  esHijoPrimero:
+    mov eax,0
+    jmp finAuxUp
+  esHijoSegundo:
+    mov eax,1
+    jmp finAuxUp
+  esHijoTercero:
+   mov eax,2
+   jmp finAuxUp
+finAuxUp:
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
   ret
 
 ; =====================================
 ; void ctIter_next(ctIter* ctIt);
 ctIter_next:
-;;DESALINEADA
-;  push rbp ;A
-;  mov rbp,rsp
-;  push rbx ;D
-;  push r12 ;A
-;  push r13 ;D
-;  push r14 ;A
-;  push r15 ;D
-;
-;  mov r8,rdi ;En r8 tengo la direccion del iterador
-;  mov r9b,[r8+offset_iter_current]; En r9b tengo la direccion de  current
-;  mov r10b,[r9b] ; En r10b tengo el valor de current
-;  add r10b,1 ; current++
-;  mov [r9b],r10b ; Guardo a current en su lugar
-;  mov r11,[r8+offset_iter_nodo] ; En r11 tengo la direccion del nodo
-;  mov r12,[r11+offset_nodo_hijo1+r10b] ; En r12 tengo al hijo del nodo [current]
-;primerIf:
-;  cmp r12,0
-;  jnz segundoElse
-;segundoIf:
-;  mov r13b,[r11+offset_nodo_len]
-;  sub r13b,1
-;  cmp r10b,r13b
-;  jle end
-;  ;REALIZAR ESTA FUNCION
-;  call ctIter_aux_up ; Ya tengo en RDI la direccion del iterador
-;  jmp end
+  push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
 
+  mov r12,rdi; Tengo en r12 el puntero al iterador
+  mov r13,1
+  add [r12+offset_iter_current],r13b ; AUMENTO CURRENT
+  add [r12+offset_iter_count],r13d ; AUMENTO COUNT
+  mov r13d,[r12+offset_iter_count]
+  mov r14,[r12+offset_iter_arbol]
+  mov r15d,[r14+offset_arbol_size]
+  cmp r13d,r15d
+  jg terminoIterador
+  mov r13,NULL
+  mov r13b,[r12+offset_iter_current] ;Tengo en r13 current actual
+  mov r14,[r12+offset_iter_nodo]
+  mov r15,[r14+r13*8+21]
+  cmp r15,NULL
+  jne hayHijos
+  mov r14,[r12+offset_iter_nodo]
+  mov r15,NULL
+  mov r15b,[r14+offset_nodo_len]
+  sub r15b,1
+  cmp r15b,r13b
+  jge salirIterNext
+  mov rdi,[r12+offset_iter_nodo]
+  mov rsi,[rdi+offset_nodo_father]
+  call ctIter_aux_up
+  mov r13,[r12+offset_iter_nodo]
+  mov r14,[r13+offset_nodo_father]
+  mov [r12+offset_iter_nodo],r14 ; PONGO AL ITERADOR EN EL NODO PADRE
+  mov [r12+offset_iter_current],al ; PONGO EN EL CURRENT CORRESPONDIENTE
+  jmp salirIterNext
 
-;segundoElse:
-;  mov [r11],r12 ; Asigno un nuevo nodo en el iterador
-;  ;REALIZAR ESTA FUNCION
-;  call ctIter_aux_down ; Bajo hasta encontrar el menor del subarbol (RDI ya tiene la direccion del iterador)
-;  jmp end
- ;RELEER EL ENUNCIADO QUE HAY UNA FUNCION QUE NO USE...
-;end:
-;  pop r15
-;  pop r14
-;  pop r13
-;  pop r12
-;  pop rbx
-;  pop rbp
-;  ret
-
- 
-
+  ;TERMINO EL ITERADOR!
+  terminoIterador:
+  mov r13,NULL
+  mov [r12+offset_iter_nodo],r13
+  jmp salirIterNext
+  hayHijos:
+  mov r14,[r12+offset_iter_nodo]
+  mov rbx,0
+  mov bl,[r12+offset_iter_current]
+  mov r15,[r14+rbx*8+21] ; R15 ES CHILD[CURRENT]
+  mov rdi,r15
+  call nodoMasALaIzq
+  mov [r12+offset_iter_nodo],rax ; Pongo en el iterador el nodo mas a la izq
+  mov r13,NULL
+  mov [r12+offset_iter_current],r13b; PONGO CURRENT EN 0
+salirIterNext:
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+  ret
 
 ; =====================================
 ; uint32_t ctIter_get(ctIter* ctIt);
 ctIter_get:
-  mov r9,[rdi+offset_iter_nodo] ;En r9 tengo la direccion del nodo actual
-  mov r10b,[rdi+offset_iter_current]; En r10 tengo la posicion actual dentro del nodo
-  mov eax, [rdi+r10*4+8] ; Guardo el resultado en eax(32 bits bajos de rax)
+push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,rdi ; En r12 tengo el puntero al iterador
+  mov r13,[r12+offset_iter_nodo] ;En r13 tengo la direccion del nodo actual
+  mov r10,NULL
+  mov r10b,[r12+offset_iter_current]; En r10 tengo la posicion actual dentro del nodo
+  mov rax,NULL
+  mov eax, [r13+r10*4+8] ; Guardo el resultado en eax(32 bits bajos de rax)
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
+
         ret
 
 ; =====================================
 ; uint32_t ctIter_valid(ctIter* ctIt);
 ctIter_valid:
-  mov r9,NULL
-  cmp [rdi+offset_iter_nodo],r9
+
+ push rbp ;A
+  mov rbp,rsp
+  sub rsp,8;D
+  push rbx ;A
+  push r12 ;D
+  push r13 ;A
+  push r14 ;D
+  push r15 ;A
+  mov r12,NULL
+  mov r13,rdi;En r13 tengo el puntero al iterador
+  cmp [r13+offset_iter_nodo],r12
   jz esInvalido
   mov eax,1 ; 
 fin:
+  pop r15;D
+  pop r14;A
+  pop r13;D
+  pop r12;A
+  pop rbx;D
+  add rsp,8;A
+  pop rbp;D
         ret
 esInvalido:
-  mov eax,r9d
+  mov eax,r12d
   jmp fin
 
 

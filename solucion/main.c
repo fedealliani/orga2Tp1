@@ -16,28 +16,20 @@ int main (void){
 	int j=4;
     char* name = "archivito.txt";
     FILE *pFile = fopen( name, "a" );
-    printf("Creo el arbol pct\n");
     ctTree* pct; 
     ct_new(&pct);
-    printf("Size ptct=%d\n",pct->size);
-    printf("Agrego el %d\n",a);
     ct_add(pct,a);
-    printf("Size ptct=%d\n",pct->size);
-    printf("Nodo Root valor[0]=%d\n",pct->root->value[0]);
-    printf("Agrego el %d\n",b);
     ct_add(pct,b);
-    printf("Nodo Root valor[1]=%d\n",pct->root->value[1]);
-    ct_print(pct,pFile);
-  /*  printf("Agrego el %d\n",c);
     ct_add(pct,c);
-    printf("Nodo Root valor[2]=%d\n",pct->root->value[2]);
-	ct_add(pct,d);
+    ct_add(pct,d);
     ct_add(pct,e);
     ct_add(pct,f);
     ct_add(pct,g);
     ct_add(pct,h);
     ct_add(pct,i);
     ct_add(pct,j);
+    ct_print(pct,pFile);
+
 
     ctIter* iter = ctIter_new(pct);
     ctIter_first(iter);
@@ -45,9 +37,10 @@ int main (void){
     	printf("%d\n",ctIter_get(iter));
     	ctIter_next(iter);
     }
-    ctIter_delete(iter);
+  ctIter_delete(iter);
+
     ct_delete(&pct);
-    */
+    
     fprintf(pFile,"-\n");
         
     fclose( pFile );

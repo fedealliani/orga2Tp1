@@ -52,17 +52,17 @@ if (fatherNode==NULL){
 if (newVal<(*(*currNode)).value[0]){
 			*currNode=(*(*currNode)).child[0];
 		}
-		if (newVal>(*(*currNode)).value[0] && newVal<(*(*currNode)).value[1]){
+		else if (newVal>(*(*currNode)).value[0] && newVal<(*(*currNode)).value[1]){
 					*currNode=(*(*currNode)).child[1];
 
 		}
 
-		if (newVal>(*(*currNode)).value[1] && newVal<(*(*currNode)).value[2]){
+		else if (newVal>(*(*currNode)).value[1] && newVal<(*(*currNode)).value[2]){
 					*currNode=(*(*currNode)).child[2];
 
 		}
 
-		if (newVal>(*(*currNode)).value[2]){
+		else if (newVal>(*(*currNode)).value[2]){
 						*currNode=(*(*currNode)).child[3];
 
 		}
@@ -111,7 +111,8 @@ void ct_aux_fill(ctNode* currNode, uint32_t newVal){
 }
 
 void ct_add(ctTree* ct, uint32_t newVal) {
-ctNode* nodoDondeVa= ct_aux_search(&(*ct).root,NULL,newVal);
+ctNode* nodoRoot= ct->root;
+ctNode* nodoDondeVa= ct_aux_search(&nodoRoot,NULL,newVal);
 if (nodoDondeVa==NULL)return;
 char sizeNodo= nodoDondeVa->len;
 ct_aux_fill(nodoDondeVa,newVal); 
