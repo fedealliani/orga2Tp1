@@ -65,6 +65,8 @@ if (newVal<(*(*currNode)).value[0]){
 		else if (newVal>(*(*currNode)).value[2]){
 						*currNode=(*(*currNode)).child[3];
 
+		}else{
+			return NULL;
 		}
 //LLAMO A LA RECURSION 
 		return ct_aux_search(currNode,fatherNode,newVal);

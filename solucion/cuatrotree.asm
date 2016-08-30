@@ -311,8 +311,8 @@ nodoMasALaIzq:
   push r13 ;A
   push r14 ;D
   push r15 ;A
-  mov r12,rdi
-  mov r13,rdi
+  mov r12,rdi ; Tengo en r12 el puntero al nodo actual
+  mov r13,rdi; Tengo en r13 el puntero al nodo actual
 ciclo:
   ;r12 es el nodo temporal a preguntar
   ;r13 es el ultimo nodo que tiene valor
@@ -448,6 +448,7 @@ ctIter_next:
   sub r15b,1
   cmp r15b,r13b
   jge salirIterNext
+suboLevel:
   mov rdi,[r12+offset_iter_nodo]
   mov rsi,[rdi+offset_nodo_father]
   call ctIter_aux_up
@@ -455,6 +456,8 @@ ctIter_next:
   mov r14,[r13+offset_nodo_father]
   mov [r12+offset_iter_nodo],r14 ; PONGO AL ITERADOR EN EL NODO PADRE
   mov [r12+offset_iter_current],al ; PONGO EN EL CURRENT CORRESPONDIENTE
+  cmp al,3
+  je suboLevel
   jmp salirIterNext
 
   ;TERMINO EL ITERADOR!

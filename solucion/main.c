@@ -28,8 +28,12 @@ int main (void){
     ct_add(pct,h);
     ct_add(pct,i);
     ct_add(pct,j);
-    ct_print(pct,pFile);
 
+for (int i = 0; i < 100; i++)
+{
+    ct_add(pct,i);
+}
+    ct_print(pct,pFile);
 
     ctIter* iter = ctIter_new(pct);
     ctIter_first(iter);
