@@ -29,11 +29,6 @@ int main (void){
     ct_add(pct,i);
     ct_add(pct,j);
 
-for (int i = 0; i < 100; i++)
-{
-    ct_add(pct,i);
-}
-    ct_print(pct,pFile);
 
     ctIter* iter = ctIter_new(pct);
     ctIter_first(iter);
@@ -41,11 +36,11 @@ for (int i = 0; i < 100; i++)
     	printf("%d\n",ctIter_get(iter));
     	ctIter_next(iter);
     }
-  ctIter_delete(iter);
+    ctIter_delete(iter);
 
     ct_delete(&pct);
     
-    fprintf(pFile,"-\n");
+    
         
     fclose( pFile );
     
